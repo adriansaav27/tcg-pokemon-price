@@ -1,25 +1,26 @@
-# 🃏 TCG Pokémon - Extracción y Conversión de Precios
+# 🃏 TCG Pokémon - Análisis y Conversión de Precios
 
-Este proyecto permite **extraer automáticamente los nombres y precios de cartas de Pokémon TCG** desde un listado de URLs, convertir los precios de **USD a EUR**, y generar una tabla ordenada con los resultados.
+Este proyecto permite **extraer automáticamente los nombres y precios de cartas de Pokémon TCG** desde un listado de URLs, convertir los precios de **USD a EUR**, y generar un **análisis visual del beneficio total** comparando precios de compra y venta.
 
 ---
 
 ## 🚀 Descripción
 
-El script toma como entrada un archivo `.txt` que contiene URLs de cartas de Pokémon (una por línea).
+El script toma como entrada un archivo `.csv` que contiene las **URLs** de las cartas y su **precio de compra**.  
 Luego:
-1. Accede a cada página y obtiene el **nombre** y **precio** de la carta.
-2. Convierte el precio de **USD → EUR** usando la librería `currex`.
-3. Guarda los datos en una lista de objetos.
-4. Crea un **DataFrame de Pandas** con los resultados ordenados por precio.
 
-El objetivo es facilitar el análisis o valoración de cartas Pokémon TCG con precios actualizados en euros.
+1. Accede a cada URL y obtiene el **nombre** y **precio de venta (USD)**.  
+2. Convierte los precios de **USD → EUR** usando la librería `currex`.  
+3. Calcula los **totales de compra y venta**.  
+4. Muestra una **gráfica comparativa** con el beneficio obtenido.
+
+El objetivo es facilitar el análisis de inversión y rentabilidad en cartas Pokémon TCG.
 
 ---
 
 ## 🧩 Requisitos
 
-Este proyecto fue diseñado para ejecutarse en **Google Colab**.
+El proyecto está diseñado para ejecutarse en **Google Colab**.  
 Asegúrate de instalar las siguientes dependencias antes de ejecutar el script:
 
 ```bash
@@ -34,9 +35,9 @@ pip install openpyxl
 ## 📂 Archivos del proyecto
 
 | Archivo | Descripción |
-|----------|--------------|
-| `tcg-pokemon.ipynb` | Notebook principal con el código. |
-| `urls.txt` | Archivo de texto con las URLs de las cartas (una por línea). |
+|----------|-------------|
+| `tcg_pokemon.py` | Script principal con el código. |
+| `urls.csv` | Archivo CSV con las URLs y precios de compra. |
 | `README.md` | Este archivo con la documentación del proyecto. |
 
 ---
@@ -45,49 +46,63 @@ pip install openpyxl
 
 ### Clase `Carta`
 Representa una carta con los siguientes atributos:
-- `nombre`: Nombre de la carta.
-- `precio`: Precio convertido a euros.
+
+- `nombre`: Nombre de la carta.  
+- `precio_venta`: Precio convertido a euros (extraído desde la web).  
+- `precio_compra`: Precio original del CSV (en euros).  
 - `url`: Enlace original del producto.
 
 ### Flujo principal:
-1. **Carga de archivo `.txt`** → Se solicita al usuario que suba un archivo con URLs.
-2. **Scraping** → Se usa `requests` y `BeautifulSoup` para obtener los datos.
-3. **Conversión de moneda** → Se convierte el precio a euros con `currex`.
-4. **Creación del DataFrame** → Se ordenan los resultados de mayor a menor precio.
-5. **Salida** → Se muestra el DataFrame final con columnas:
-   - `nombre`
-   - `precio`
-   - `url`
+
+1. **Carga del archivo `.csv`** → El usuario sube el archivo con columnas `url` y `price`.  
+2. **Scraping** → Se obtiene el nombre y el precio de venta desde la web.  
+3. **Conversión de moneda** → Se convierte el precio USD → EUR con `currex`.  
+4. **Creación del DataFrame** → Se ordenan los resultados por `precio_venta`.  
+5. **Cálculo de totales** → Se suman precios de compra y venta para obtener el **beneficio total**.  
+6. **Visualización** → Se genera una gráfica de barras horizontales comparando los totales.
 
 ---
 
 ## 📄 Ejemplo de uso
 
-### 1️⃣ Crear un archivo `urls.txt` con contenido similar a:
-```
-https://www.cardmarket.com/en/Pokemon/Products/Singles/Base-Set/Charizard
-https://www.cardmarket.com/en/Pokemon/Products/Singles/Jungle/Pikachu
+### 1️⃣ Crear un archivo `urls.csv` con este formato:
+
+```csv
+url,price
+https://www.cardmarket.com/en/Pokemon/Products/Singles/Base-Set/Charizard,100
+https://www.cardmarket.com/en/Pokemon/Products/Singles/Jungle/Pikachu,10
 ```
 
-### 2️⃣ Ejecutar el notebook en Google Colab
+### 2️⃣ Ejecutar el script en Google Colab
+
 Sube el archivo cuando el programa lo solicite:
 
 ```
-Selecciona el archivo ".txt":
+Selecciona el archivo ".csv":
 ```
 
 ### 3️⃣ Resultado esperado
-Un DataFrame con las cartas ordenadas por precio en euros:
 
-| nombre | precio (EUR) | url |
-|--------|----------------|-----|
-| Charizard | 120.50 | https://... |
-| Pikachu | 15.30 | https://... |
+Un DataFrame con las cartas ordenadas por precio de venta:
+
+| nombre | precio_venta | precio_compra | url |
+|--------|---------------------|----------------|-----|
+| Charizard | 120.50 | 100 | https://... |
+| Pikachu | 15.30 | 10 | https://... |
+
+Y una **gráfica de barras** mostrando el beneficio total:
+
+```
+Beneficio: 25.80 EUR
+[■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] 135.80 EUR
+[■■■■■■■■■■■■■■■■■] 110.0 EUR
+```
 
 ---
 
 ## ⏱️ Notas
 
-- El script espera **1 segundo entre cada petición** para evitar sobrecargar el servidor.
-- Si alguna URL falla, se muestra un mensaje con el código de error HTTP.
-- Los precios se redondean a **2 decimales**.
+- El script espera **1 segundo entre cada petición** para evitar sobrecargar el servidor.  
+- Si una URL falla, se muestra el **código de error HTTP**.  
+- Los precios se redondean a **2 decimales**.  
+- La gráfica muestra el **total de compra, total de venta y beneficio final**.
