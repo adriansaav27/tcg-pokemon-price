@@ -69,8 +69,8 @@ Representa una carta con los siguientes atributos:
 
 ```csv
 url,price
-https://www.cardmarket.com/en/Pokemon/Products/Singles/Base-Set/Charizard,100
-https://www.cardmarket.com/en/Pokemon/Products/Singles/Jungle/Pikachu,10
+https://www.pricecharting.com/es/game/pokemon-japanese-vstar-universe/mewtwo-vstar-221,100
+https://www.pricecharting.com/es/game/pokemon-japanese-vstar-universe/charizard-vstar-212,10
 ```
 
 ### 2️⃣ Ejecutar el script en Google Colab
